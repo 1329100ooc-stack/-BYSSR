@@ -1,37 +1,37 @@
-45" stroke="#212529" stroke-width="1"/>
-                <text id="pipe_img_H" x="20" y="120" fill="#212529" font-size="11" font-weight="bold" text-anchor="middle">H: -</text>
-                <text id="pipe_img_L1" x="65" y="112" fill="#d32f2f" font-size="11" font-weight="bold" text-anchor="middle">L: -</text>
-                <text id="pipe_img_L2" x="175" y="112" fill="#d32f2f" font-size="11" font-weight="bold" text-anchor="middle">L: -</text>
-                <text id="pipe_img_bottomWidth" x="120" y="198" font-size="11" font-weight="bold" fill="#2e7d32" text-anchor="middle">ช่วงราบ: -</text>
-                <text id="pipe_img_angCenter" x="120" y="222" font-size="12" font-weight="bold" fill="#d32f2f" text-anchor="middle">-°</text>
+idth="1" stroke-dasharray="3,3"/>
+                <text id="pipe_img_H" x="50" y="95" fill="#212529" font-size="12" font-weight="bold" text-anchor="middle">H: -</text>
+                
+                <!-- ระยะมาร์กเฉียง L -->
+                <text id="pipe_img_L1" x="135" y="80" fill="#d32f2f" font-size="12" font-weight="bold" text-anchor="middle">L: -</text>
+                
+                <!-- แสดงมุมดัด -->
+                <text id="pipe_img_angCenter" x="90" y="150" font-size="11" font-weight="bold" fill="#495057" text-anchor="middle">-°</text>
+                <text id="pipe_img_angSide" x="160" y="35" font-size="11" font-weight="bold" fill="#495057" text-anchor="middle">-°</text>
             </svg>
         </div>
 
-        <label id="lblPipeH">ระยะความลึกที่ต้องหลบ (H) - มิลลิเมตร:</label>
-        <input type="number" id="pipeH" value="25" oninput="calculatePipe()">
+        <label id="lblPipeH">ระยะความสูงที่ต้องหลบขึ้นบน (H) - มิลลิเมตร:</label>
+        <input type="number" id="pipeH" value="22" oninput="calculatePipe()">
 
-        <label>ความกว้างของเสา (W) - มิลลิเมตร:</label>
-        <input type="number" id="pipeW" value="150" oninput="calculatePipe()">
-
-        <label>มุมที่ใช้ดัดด้านข้าง (องศา):</label>
-        <input type="number" id="pipeAngleInput" value="45" step="0.5" min="10" max="60" oninput="syncPipeSlider()">
+        <label>มุมที่ใช้ดัด (องศา):</label>
+        <input type="number" id="pipeAngleInput" value="42" step="0.5" min="10" max="60" oninput="syncPipeSlider()">
         <div class="slider-container">
-            <input type="range" id="pipeAngleSlider" min="10" max="60" step="0.5" value="45" oninput="syncPipeInput()">
-            <span style="font-weight:bold; color:#d32f2f; min-width:50px;" id="pipeSliderVal">45.0°</span>
+            <input type="range" id="pipeAngleSlider" min="10" max="60" step="0.5" value="42" oninput="syncPipeInput()">
+            <span style="font-weight:bold; color:#d32f2f; min-width:50px;" id="pipeSliderVal">42.0°</span>
         </div>
 
         <div class="result-box pipe-theme">
-            <div class="result-item"><span>มุมดัดตรงกลาง (จุดครอบ):</span> <span id="pipeCenterAngle" class="highlight pipe-theme">-</span></div>
-            <div class="result-item"><span>📏 ระยะเฉียงข้าง (L) มาร์ก:</span> <span id="pipeValL" class="highlight pipe-theme">-</span></div>
-            <div class="result-item"><span>⚠️ ระยะท่อหดเข้าทั้งหมด:</span> <span id="pipeValShrink" class="highlight pipe-theme">-</span></div>
+            <div class="result-item"><span>มุมดัดของทั้งสองจุด:</span> <span id="pipeCenterAngle" class="highlight pipe-theme">-</span></div>
+            <div class="result-item"><span>📏 ระยะห่างจุดมาร์ก (L):</span> <span id="pipeValL" class="highlight pipe-theme">-</span></div>
+            <div class="result-item"><span>⚠️ ระยะท่อหดเข้า (Shrinkage):</span> <span id="pipeValShrink" class="highlight pipe-theme">-</span></div>
         </div>
     </div>
 </div>
 
 <script>
-let currentMainTab = 'tray';
+let currentMainTab = 'pipe'; // เปิดมาหน้าดัดท่อเลยตามรูปภาพ
 let currentTrayDirection = 'down';
-let currentPipeDirection = 'down';
+let currentPipeDirection = 'up'; // ตั้งค่าดัดหลบขึ้นตามรูปภาพ
 
 function switchMainTab(tab) {
     currentMainTab = tab;
@@ -123,7 +123,7 @@ function clearTrayResults() {
 }
 
 
-// ================= SCRIPT 2: ดัดท่อคร่อมเสา =================
+// ================= SCRIPT 2: ดัดท่อคอม้า (ขาเดียว) =================
 function switchPipeDirection(dir) {
     currentPipeDirection = dir;
     document.getElementById('btnPipeDown').classList.toggle('pipe-theme', dir === 'down');
@@ -142,7 +142,7 @@ function syncPipeInput() {
 }
 
 function syncPipeSlider() {
-    let val = parseFloat(document.getElementById('pipeAngleInput').value) || 45;
+    let val = parseFloat(document.getElementById('pipeAngleInput').value) || 42;
     if(val < 10) val = 10; if(val > 60) val = 60;
     document.getElementById('pipeAngleSlider').value = val;
     document.getElementById('pipeSliderVal').innerText = val.toFixed(1) + "°";
@@ -151,41 +151,40 @@ function syncPipeSlider() {
 
 function calculatePipe() {
     let H = parseFloat(document.getElementById('pipeH').value) || 0;
-    let W = parseFloat(document.getElementById('pipeW').value) || 0;
     let sideAngle = parseFloat(document.getElementById('pipeAngleInput').value) || 0;
 
-    if(H <= 0 || W <= 0 || sideAngle <= 0) { clearPipeResults(); return; }
+    if(H <= 0 || sideAngle <= 0) { clearPipeResults(); return; }
 
     let rad = sideAngle * (Math.PI / 180);
-    let centerAngle = sideAngle * 2;
     let L = H / Math.sin(rad);
-    let shrink = (L - (H / Math.tan(rad))) * 2;
+    // ระยะหดสำหรับคอม้าดัดขาเดียว = L - ระยะราบแนวเดิม (H / tan(องศา))
+    let shrink = L - (H / Math.tan(rad));
 
-    document.getElementById('pipeCenterAngle').innerText = centerAngle.toFixed(1) + " °";
+    document.getElementById('pipeCenterAngle').innerText = sideAngle.toFixed(1) + "°";
     document.getElementById('pipeValL').innerText = L.toFixed(1) + " mm";
     document.getElementById('pipeValShrink').innerText = shrink.toFixed(1) + " mm";
 
-    // อัปเดต SVG ของท่อ
+    // อัปเดตรูป SVG สไตล์คอม้าขาเดียว (หลบขึ้น / หลบลง)
     if (currentPipeDirection === 'down') {
-        updateEl('pipe_img_pole', {y: 100}); updateEl('pipe_img_poleText', {y: 130}); updateEl('pipe_img_W', {y: 148});
-        document.getElementById('pipe_path').setAttribute('d', 'M 15,85 L 60,85 L 95,145 L 145,145 L 180,85 L 225,85');
-        updateEl('pipe_line_H', {x1:45, y1:85, x2:45, y2:145}); updateEl('pipe_img_H', {x:20, y:120});
-        updateEl('pipe_img_L1', {x:65, y:112}); updateEl('pipe_img_L2', {x:175, y:112});
-        updateEl('pipe_img_bottomWidth', {x:120, y:198}); document.getElementById('pipe_img_bottomWidth').innerText = "ช่วงราบล่าง: " + W.toFixed(0) + "mm";
-        updateEl('pipe_img_angCenter', {x:120, y:222});
+        document.getElementById('pipe_path').setAttribute('d', 'M 15,50 L 90,50 L 160,130 L 235,130');
+        updateEl('pipe_line_H', {x1: 85, y1: 50, x2: 85, y2: 130}); 
+        updateEl('pipe_img_H', {x: 60, y: 95});
+        updateEl('pipe_img_L1', {x: 135, y: 105});
+        updateEl('pipe_img_angCenter', {x: 90, y: 35});
+        updateEl('pipe_img_angSide', {x: 160, y: 150});
     } else {
-        updateEl('pipe_img_pole', {y: 110}); updateEl('pipe_img_poleText', {y: 140}); updateEl('pipe_img_W', {y: 158});
-        document.getElementById('pipe_path').setAttribute('d', 'M 15,160 L 60,160 L 95,100 L 145,100 L 180,160 L 225,160');
-        updateEl('pipe_line_H', {x1:45, y1:100, x2:45, y2:160}); updateEl('pipe_img_H', {x:20, y:135});
-        updateEl('pipe_img_L1', {x:65, y:128}); updateEl('pipe_img_L2', {x:175, y:128});
-        updateEl('pipe_img_bottomWidth', {x:120, y:50}); document.getElementById('pipe_img_bottomWidth').innerText = "ช่วงราบบน: " + W.toFixed(0) + "mm";
-        updateEl('pipe_img_angCenter', {x:120, y:210});
+        document.getElementById('pipe_path').setAttribute('d', 'M 15,130 L 90,130 L 160,50 L 235,50');
+        updateEl('pipe_line_H', {x1: 85, y1: 130, x2: 85, y2: 50}); 
+        updateEl('pipe_img_H', {x: 60, y: 95});
+        updateEl('pipe_img_L1', {x: 135, y: 80});
+        updateEl('pipe_img_angCenter', {x: 90, y: 150});
+        updateEl('pipe_img_angSide', {x: 160, y: 35});
     }
+    
     document.getElementById('pipe_img_H').innerText = "H: " + H.toFixed(0) + "mm";
     document.getElementById('pipe_img_L1').innerText = "L: " + L.toFixed(0) + "mm";
-    document.getElementById('pipe_img_L2').innerText = "L: " + L.toFixed(0) + "mm";
-    document.getElementById('pipe_img_W').innerText = "W: " + W.toFixed(0) + "mm";
-    document.getElementById('pipe_img_angCenter').innerText = centerAngle.toFixed(1) + "°";
+    document.getElementById('pipe_img_angCenter').innerText = sideAngle.toFixed(0) + "°";
+    document.getElementById('pipe_img_angSide').innerText = sideAngle.toFixed(0) + "°";
 }
 
 function clearPipeResults() {
@@ -197,9 +196,9 @@ function updateEl(id, attrs) {
     if(el) { for (let key in attrs) { el.setAttribute(key, attrs[key]); } }
 }
 
-// โหลดหน้าแรกสุด
+// เริ่มต้นหน้าเว็บที่หน้าดัดท่อคอม้า
 window.onload = function() {
-    calculateTrayFromAngle();
+    switchMainTab('pipe');
 };
 </script>
 
