@@ -1,173 +1,4 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เครื่องคำนวณงานช่างระบบรวม</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; padding: 20px; text-align: center; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 420px; margin: 0 auto; text-align: left; }
-        h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 15px; }
-        
-        /* แท็บหลักในการสลับแอป */
-        .main-tabs {
-            display: flex;
-            background-color: #34495e;
-            border-radius: 12px;
-            padding: 5px;
-            margin-bottom: 20px;
-            gap: 5px;
-        }
-        .tab-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 12px 5px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #bdc3c7;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .tab-btn.active {
-            background-color: #ffffff;
-            color: #2c3e50;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-
-        /* ปุ่มสลับย่อยภายใน */
-        .dir-container {
-            display: flex;
-            background-color: #eef2f5;
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 15px;
-            gap: 4px;
-        }
-        .dir-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 8px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #555;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .dir-btn.active {
-            background-color: #2ecc71;
-            color: white;
-        }
-        .dir-btn.active.pipe-theme {
-            background-color: #d32f2f;
-        }
-
-        /* พื้นที่แสดงรูปภาพ */
-        .diagram-container {
-            width: 100%;
-            height: 180px;
-            background-color: #fafafa;
-            border: 1px dashed #ccc;
-            border-radius: 10px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: #2ecc71; outline: none; }
-        .pipe-panel input:focus { border-color: #d32f2f; }
-        
-        .result-box { background: #eef9f5; border-left: 5px solid #2ecc71; padding: 15px; margin-top: 20px; border-radius: 8px; }
-        .result-box.pipe-theme { background: #fff9f9; border-left: 5px solid #d32f2f; }
-        
-        .result-item { display: flex; justify-content: space-between; margin: 10px 0; font-size: 16px; }
-        .highlight { font-weight: bold; color: #27ae60; font-size: 18px; }
-        .highlight.pipe-theme { color: #d32f2f; }
-        
-        .hint { font-size: 12px; color: #888; margin-top: 2px; }
-        .v-input { background-color: #fffbf0; border: 1px solid #f39c12; }
-        .v-input:focus { border-color: #e67e22; }
-
-        .slider-container { display: flex; align-items: center; margin-top: 8px; gap: 10px; }
-        .slider-container input[type="range"] { flex: 1; accent-color: #d32f2f; cursor: pointer; height: auto; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <!-- แท็บสลับหน้างานหลัก -->
-    <div class="main-tabs">
-        <button id="tabTray" class="tab-btn active" onclick="switchMainTab('tray')">📐 พับรางคอม้า (ตัว V)</button>
-        <button id="tabPipe" class="tab-btn" onclick="switchMainTab('pipe')">⚡ ดัดท่อคร่อมเสา</button>
-    </div>
-
-    <!-- ================= PANEL 1: พับรางคอม้าตัว V ================= -->
-    <div id="panelTray" class="tray-panel">
-        <h2>พับรางคอม้าตัว V (BYssr)</h2>
-        <div class="dir-container">
-            <button id="btnTrayDown" class="dir-btn active" onclick="switchTrayDirection('down')">พับหลบลงด้านล่าง 👇</button>
-            <button id="btnTrayUp" class="dir-btn" onclick="switchTrayDirection('up')">พับหลบขึ้นด้านบน ☝️</button>
-        </div>
-
-        <div class="diagram-container">
-            <svg width="340" height="150" viewBox="0 0 340 150" style="overflow: visible;">
-                <path id="tray_path" d="M 20,40 L 110,40 L 170,100 L 250,100 L 320,100" fill="none" stroke="#bdc3c7" stroke-width="14" stroke-linejoin="miter"/>
-                <path id="tray_center_path" d="M 20,40 L 110,40 L 170,100 L 250,100 L 320,100" fill="none" stroke="#e74c3c" stroke-width="2"/>
-                <circle id="tray_node1" cx="110" cy="40" r="4" fill="#27ae60" />
-                <circle id="tray_node2" cx="170" cy="100" r="4" fill="#27ae60" />
-                <text id="tray_img_L" x="145" y="65" font-size="12" font-weight="bold" fill="#27ae60" text-anchor="middle">L: -</text>
-                <text id="tray_img_H" x="82" y="75" font-size="11" font-weight="bold" fill="#7f8c8d" text-anchor="end">H: -</text>
-                <line id="tray_line_H" x1="90" y1="40" x2="90" y2="100" stroke="#7f8c8d" stroke-width="1" stroke-dasharray="3,3"/>
-                <text id="tray_img_angle" x="110" y="25" font-size="11" font-weight="bold" fill="#e67e22" text-anchor="middle">-°</text>
-                <text id="tray_img_vWidth" x="170" y="120" font-size="11" font-weight="bold" fill="#f39c12" text-anchor="middle">ปาก V: -</text>
-            </svg>
-        </div>
-
-        <label>1. ความลึกขนาดราง (เซนติเมตร):</label>
-        <input type="number" id="depth" value="10" step="0.1" oninput="calculateTrayFromAngle()">
-
-        <label>2. มุมหัก (องศา):</label>
-        <input type="number" id="angle" value="40" min="1" max="89" step="0.5" oninput="calculateTrayFromAngle()">
-        <div class="hint">* ปรับตัวเลขได้ละเอียดตามต้องการ (เช่น 35, 42.5)</div>
-
-        <label>3. ความสูงคอม้า (เซนติเมตร):</label>
-        <input type="number" id="height" value="10" step="0.1" oninput="calculateTrayFromAngle()">
-
-        <label style="color: #e67e22;">4. หรือระบุ กว้างปากตัว V (เซนติเมตร):</label>
-        <input type="number" id="vWidth" class="v-input" value="7.28" step="0.01" oninput="calculateTrayFromVWidth()">
-        <div class="hint">* สามารถพิมพ์แก้ไขตรงนี้เพื่อหาองศาแทนได้</div>
-
-        <div class="result-box">
-            <div class="result-item"><span>📏 ระยะห่างจุดมาร์ก (L):</span> <span id="distanceL" class="highlight">-</span></div>
-            <div class="result-item"><span>⚠️ ระยะรางที่หาย:</span> <span id="shrinkage" class="highlight">-</span></div>
-        </div>
-    </div>
-
-
-    <!-- ================= PANEL 2: ดัดท่อคร่อมเสา ================= -->
-    <div id="panelPipe" class="pipe-panel" style="display: none;">
-        <h2 style="color: #d32f2f;">ดัดท่อคร่อมเสาสามจุด</h2>
-        <div class="dir-container">
-            <button id="btnPipeDown" class="dir-btn active pipe-theme" onclick="switchPipeDirection('down')">ดัดหลบลงด้านล่าง 👇</button>
-            <button id="btnPipeUp" class="dir-btn" onclick="switchPipeDirection('up')">ดัดหลบขึ้นด้านบน ☝️</button>
-        </div>
-
-        <div class="diagram-container">
-            <svg width="340" height="160" viewBox="0 0 240 240" style="overflow: visible; scale: 0.75;">
-                <rect id="pipe_img_pole" x="95" y="100" width="50" height="70" fill="#e9ecef" stroke="#ced4da" stroke-width="1.5" rx="4"/>
-                <text id="pipe_img_poleText" x="120" y="130" fill="#6c757d" font-size="11" font-weight="bold" text-anchor="middle">หน้าเสา</text>
-                <text id="pipe_img_W" x="120" y="148" fill="#1976d2" font-size="11" font-weight="bold" text-anchor="middle">W: -</text>
-                <path id="pipe_path" d="M 15,85 L 60,85 L 95,145 L 145,145 L 180,85 L 225,85" fill="none" stroke="#d32f2f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                <line id="pipe_line_H" x1="45" y1="85" x2="45" y2="145" stroke="#212529" stroke-width="1"/>
+45" stroke="#212529" stroke-width="1"/>
                 <text id="pipe_img_H" x="20" y="120" fill="#212529" font-size="11" font-weight="bold" text-anchor="middle">H: -</text>
                 <text id="pipe_img_L1" x="65" y="112" fill="#d32f2f" font-size="11" font-weight="bold" text-anchor="middle">L: -</text>
                 <text id="pipe_img_L2" x="175" y="112" fill="#d32f2f" font-size="11" font-weight="bold" text-anchor="middle">L: -</text>
@@ -369,6 +200,381 @@ function updateEl(id, attrs) {
 // โหลดหน้าแรกสุด
 window.onload = function() {
     calculateTrayFromAngle();
+};
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคำนวณงานช่างระบบรวม</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; padding: 20px; text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 420px; margin: 0 auto; text-align: left; }
+        h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 15px; }
+        
+        /* แท็บหลักในการสลับแอป */
+        .main-tabs {
+            display: flex;
+            background-color: #34495e;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #bdc3c7;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* ปุ่มสลับย่อยภายใน */
+        .dir-container {
+            display: flex;
+            background-color: #eef2f5;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 15px;
+            gap: 4px;
+        }
+        .dir-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .dir-btn.active {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .dir-btn.active.pipe-theme {
+            background-color: #d32f2f;
+        }
+
+        /* พื้นที่แสดงรูปภาพ */
+        .diagram-container {
+            width: 100%;
+            height: 180px;
+            background-color: #fafafa;
+            border: 1px dashed #ccc;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
+        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        input:focus { border-color: #2ecc71; outline: none; }
+        .pipe-panel input:focus { border-color: #d32f2f; }
+        
+        .result-box { background: #eef9f5; border-left: 5px solid #2ecc71; padding: 15px; margin-top: 20px; border-radius: 8px; }
+        .result-box.pipe-theme { background: #fff9f9; border-left: 5px solid #d32f2f; }
+        
+        .result-item { display: flex; justify-content: space-between; margin: 10px 0; font-size: 16px; }
+        .highlight { font-weight: bold; color: #27ae60; font-size: 18px; }
+        .highlight.pipe-theme { color: #d32f2f; }
+        
+        .hint { font-size: 12px; color: #888; margin-top: 2px; }
+        .v-input { background-color: #fffbf0; border: 1px solid #f39c12; }
+        .v-input:focus { border-color: #e67e22; }
+
+        .slider-container { display: flex; align-items: center; margin-top: 8px; gap: 10px; }
+        .slider-container input[type="range"] { flex: 1; accent-color: #d32f2f; cursor: pointer; height: auto; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <!-- แท็บสลับหน้างานหลัก -->
+    <div class="main-tabs">
+        <button id="tabTray" class="tab-btn" onclick="switchMainTab('tray')">📐 พับรางคอม้า (ตัว V)</button>
+        <button id="tabPipe" class="tab-btn active" onclick="switchMainTab('pipe')">⚡ ดัดท่อคอม้า</button>
+    </div>
+
+    <!-- ================= PANEL 1: พับรางคอม้าตัว V ================= -->
+    <div id="panelTray" class="tray-panel" style="display: none;">
+        <h2>พับรางคอม้าตัว V (BYssr)</h2>
+        <div class="dir-container">
+            <button id="btnTrayDown" class="dir-btn active" onclick="switchTrayDirection('down')">พับหลบลงด้านล่าง 👇</button>
+            <button id="btnTrayUp" class="dir-btn" onclick="switchTrayDirection('up')">พับหลบขึ้นด้านบน ☝️</button>
+        </div>
+
+        <div class="diagram-container">
+            <svg width="340" height="150" viewBox="0 0 340 150" style="overflow: visible;">
+                <path id="tray_path" d="M 20,40 L 110,40 L 170,100 L 250,100 L 320,100" fill="none" stroke="#bdc3c7" stroke-width="14" stroke-linejoin="miter"/>
+                <path id="tray_center_path" d="M 20,40 L 110,40 L 170,100 L 250,100 L 320,100" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                <circle id="tray_node1" cx="110" cy="40" r="4" fill="#27ae60" />
+                <circle id="tray_node2" cx="170" cy="100" r="4" fill="#27ae60" />
+                <text id="tray_img_L" x="145" y="65" font-size="12" font-weight="bold" fill="#27ae60" text-anchor="middle">L: -</text>
+                <text id="tray_img_H" x="82" y="75" font-size="11" font-weight="bold" fill="#7f8c8d" text-anchor="end">H: -</text>
+                <line id="tray_line_H" x1="90" y1="40" x2="90" y2="100" stroke="#7f8c8d" stroke-width="1" stroke-dasharray="3,3"/>
+                <text id="tray_img_angle" x="110" y="25" font-size="11" font-weight="bold" fill="#e67e22" text-anchor="middle">-°</text>
+                <text id="tray_img_vWidth" x="170" y="120" font-size="11" font-weight="bold" fill="#f39c12" text-anchor="middle">ปาก V: -</text>
+            </svg>
+        </div>
+
+        <label>1. ความลึกขนาดราง (เซนติเมตร):</label>
+        <input type="number" id="depth" value="10" step="0.1" oninput="calculateTrayFromAngle()">
+
+        <label>2. มุมหัก (องศา):</label>
+        <input type="number" id="angle" value="40" min="1" max="89" step="0.5" oninput="calculateTrayFromAngle()">
+        <div class="hint">* ปรับตัวเลขได้ละเอียดตามต้องการ (เช่น 35, 42.5)</div>
+
+        <label>3. ความสูงคอม้า (เซนติเมตร):</label>
+        <input type="number" id="height" value="10" step="0.1" oninput="calculateTrayFromAngle()">
+
+        <label style="color: #e67e22;">4. หรือระบุ กว้างปากตัว V (เซนติเมตร):</label>
+        <input type="number" id="vWidth" class="v-input" value="7.28" step="0.01" oninput="calculateTrayFromVWidth()">
+        <div class="hint">* สามารถพิมพ์แก้ไขตรงนี้เพื่อหาองศาแทนได้</div>
+
+        <div class="result-box">
+            <div class="result-item"><span>📏 ระยะห่างจุดมาร์ก (L):</span> <span id="distanceL" class="highlight">-</span></div>
+            <div class="result-item"><span>⚠️ ระยะรางที่หาย:</span> <span id="shrinkage" class="highlight">-</span></div>
+        </div>
+    </div>
+
+
+    <!-- ================= PANEL 2: ดัดท่อคอม้า (ตัดฝั่งขวาออกแล้ว) ================= -->
+    <div id="panelPipe" class="pipe-panel">
+        <h2 style="color: #d32f2f;">ดัดท่อคอม้า (ขาเดียว)</h2>
+        <div class="dir-container">
+            <button id="btnPipeDown" class="dir-btn pipe-theme" onclick="switchPipeDirection('down')">ดัดหลบลงด้านล่าง 👇</button>
+            <button id="btnPipeUp" class="dir-btn active pipe-theme" onclick="switchPipeDirection('up')">ดัดหลบขึ้นด้านบน ☝️</button>
+        </div>
+
+        <div class="diagram-container">
+            <svg width="340" height="150" viewBox="0 0 240 180" style="overflow: visible; scale: 0.85;">
+                <!-- เส้นท่อวิ่งเฉียงขึ้นสไตล์คอม้าขาเดียว (ไม่มีหักลงฝั่งขวาแล้ว) -->
+                <path id="pipe_path" d="M 15,130 L 90,130 L 160,50 L 235,50" fill="none" stroke="#d32f2f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <!-- มิติระยะความสูง H -->
+                <line id="pipe_line_H" x1="75" y1="130" x2="75" y2="50" stroke="#212529" stroke-width="1" stroke-dasharray="3,3"/>
+                <text id="pipe_img_H" x="50" y="95" fill="#212529" font-size="12" font-weight="bold" text-anchor="middle">H: -</text>
+                
+                <!-- ระยะมาร์กเฉียง L -->
+                <text id="pipe_img_L1" x="135" y="80" fill="#d32f2f" font-size="12" font-weight="bold" text-anchor="middle">L: -</text>
+                
+                <!-- แสดงมุมดัด -->
+                <text id="pipe_img_angCenter" x="90" y="150" font-size="11" font-weight="bold" fill="#495057" text-anchor="middle">-°</text>
+                <text id="pipe_img_angSide" x="160" y="35" font-size="11" font-weight="bold" fill="#495057" text-anchor="middle">-°</text>
+            </svg>
+        </div>
+
+        <label id="lblPipeH">ระยะความสูงที่ต้องหลบขึ้นบน (H) - มิลลิเมตร:</label>
+        <input type="number" id="pipeH" value="22" oninput="calculatePipe()">
+
+        <label>มุมที่ใช้ดัด (องศา):</label>
+        <input type="number" id="pipeAngleInput" value="42" step="0.5" min="10" max="60" oninput="syncPipeSlider()">
+        <div class="slider-container">
+            <input type="range" id="pipeAngleSlider" min="10" max="60" step="0.5" value="42" oninput="syncPipeInput()">
+            <span style="font-weight:bold; color:#d32f2f; min-width:50px;" id="pipeSliderVal">42.0°</span>
+        </div>
+
+        <div class="result-box pipe-theme">
+            <div class="result-item"><span>มุมดัดของทั้งสองจุด:</span> <span id="pipeCenterAngle" class="highlight pipe-theme">-</span></div>
+            <div class="result-item"><span>📏 ระยะห่างจุดมาร์ก (L):</span> <span id="pipeValL" class="highlight pipe-theme">-</span></div>
+            <div class="result-item"><span>⚠️ ระยะท่อหดเข้า (Shrinkage):</span> <span id="pipeValShrink" class="highlight pipe-theme">-</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentMainTab = 'pipe'; // เปิดมาหน้าดัดท่อเลยตามรูปภาพ
+let currentTrayDirection = 'down';
+let currentPipeDirection = 'up'; // ตั้งค่าดัดหลบขึ้นตามรูปภาพ
+
+function switchMainTab(tab) {
+    currentMainTab = tab;
+    document.getElementById('tabTray').classList.toggle('active', tab === 'tray');
+    document.getElementById('tabPipe').classList.toggle('active', tab === 'pipe');
+    document.getElementById('panelTray').style.display = tab === 'tray' ? 'block' : 'none';
+    document.getElementById('panelPipe').style.display = tab === 'pipe' ? 'block' : 'none';
+    
+    if(tab === 'tray') { calculateTrayFromAngle(); } else { calculatePipe(); }
+}
+
+// ================= SCRIPT 1: พับรางคอม้าตัว V =================
+function switchTrayDirection(dir) {
+    currentTrayDirection = dir;
+    document.getElementById('btnTrayDown').classList.toggle('active', dir === 'down');
+    document.getElementById('btnTrayUp').classList.toggle('active', dir === 'up');
+    redrawTrayDiagram();
+}
+
+function calculateTrayFromAngle() {
+    let depth = parseFloat(document.getElementById('depth').value) || 0;
+    let angle = parseFloat(document.getElementById('angle').value) || 0;
+    let height = parseFloat(document.getElementById('height').value) || 0;
+
+    if (angle <= 0 || angle >= 90 || depth <= 0) { clearTrayResults(); return; }
+    let rad = (angle * Math.PI) / 180;
+
+    let vWidth = 2 * depth * Math.tan(rad / 2);
+    let distanceL = height / Math.sin(rad);
+    let shrinkage = height * Math.tan(rad / 2);
+
+    document.getElementById('vWidth').value = vWidth.toFixed(2);
+    document.getElementById('distanceL').innerText = distanceL.toFixed(2) + " ซม.";
+    document.getElementById('shrinkage').innerText = shrinkage.toFixed(2) + " ซม.";
+    redrawTrayDiagram();
+}
+
+function calculateTrayFromVWidth() {
+    let depth = parseFloat(document.getElementById('depth').value) || 0;
+    let vWidth = parseFloat(document.getElementById('vWidth').value) || 0;
+    let height = parseFloat(document.getElementById('height').value) || 0;
+
+    if (vWidth <= 0 || depth <= 0) { clearTrayResults(); return; }
+    let rad = 2 * Math.atan(vWidth / (2 * depth));
+    let angle = (rad * 180) / Math.PI;
+
+    if (angle <= 0 || angle >= 90) { clearTrayResults(); return; }
+    let distanceL = height / Math.sin(rad);
+    let shrinkage = height * Math.tan(rad / 2);
+
+    document.getElementById('angle').value = angle.toFixed(1);
+    document.getElementById('distanceL').innerText = distanceL.toFixed(2) + " ซม.";
+    document.getElementById('shrinkage').innerText = shrinkage.toFixed(2) + " ซม.";
+    redrawTrayDiagram();
+}
+
+function redrawTrayDiagram() {
+    let angle = parseFloat(document.getElementById('angle').value) || 0;
+    let height = parseFloat(document.getElementById('height').value) || 0;
+    let vWidth = parseFloat(document.getElementById('vWidth').value) || 0;
+    let distanceL = parseFloat(document.getElementById('distanceL').innerText) || 0;
+
+    let pathD = currentTrayDirection === 'down' 
+        ? "M 20,40 L 110,40 L 170,100 L 250,100 L 320,100" 
+        : "M 20,100 L 110,100 L 170,40 L 250,40 L 320,40";
+
+    document.getElementById('tray_path').setAttribute('d', pathD);
+    document.getElementById('tray_center_path').setAttribute('d', pathD);
+
+    if (currentTrayDirection === 'down') {
+        updateEl('tray_node1', {cx: 110, cy: 40}); updateEl('tray_node2', {cx: 170, cy: 100});
+        updateEl('tray_line_H', {x1: 90, y1: 40, x2: 90, y2: 100});
+        updateEl('tray_img_H', {x: 82, y: 75}); updateEl('tray_img_L', {x: 145, y: 65});
+        updateEl('tray_img_angle', {x: 110, y: 25}); updateEl('tray_img_vWidth', {x: 170, y: 120});
+    } else {
+        updateEl('tray_node1', {cx: 110, cy: 100}); updateEl('tray_node2', {cx: 170, cy: 40});
+        updateEl('tray_line_H', {x1: 90, y1: 100, x2: 90, y2: 40});
+        updateEl('tray_img_H', {x: 82, y: 75}); updateEl('tray_img_L', {x: 145, y: 75});
+        updateEl('tray_img_angle', {x: 110, y: 120}); updateEl('tray_img_vWidth', {x: 170, y: 25});
+    }
+    document.getElementById('tray_img_H').innerText = "H: " + height.toFixed(1) + " ซม.";
+    document.getElementById('tray_img_L').innerText = "L: " + distanceL.toFixed(1) + " ซม.";
+    document.getElementById('tray_img_angle').innerText = angle.toFixed(1) + "°";
+    document.getElementById('tray_img_vWidth').innerText = "ปาก V: " + vWidth.toFixed(1) + " ซม.";
+}
+
+function clearTrayResults() {
+    document.getElementById('distanceL').innerText = "-"; document.getElementById('shrinkage').innerText = "-";
+}
+
+
+// ================= SCRIPT 2: ดัดท่อคอม้า (ขาเดียว) =================
+function switchPipeDirection(dir) {
+    currentPipeDirection = dir;
+    document.getElementById('btnPipeDown').classList.toggle('pipe-theme', dir === 'down');
+    document.getElementById('btnPipeDown').classList.toggle('active', dir === 'down');
+    document.getElementById('btnPipeUp').classList.toggle('pipe-theme', dir === 'up');
+    document.getElementById('btnPipeUp').classList.toggle('active', dir === 'up');
+    document.getElementById('lblPipeH').innerText = dir === 'down' ? "ระยะความลึกที่ต้องหลบ (H) - มิลลิเมตร:" : "ระยะความสูงที่ต้องหลบขึ้นบน (H) - มิลลิเมตร:";
+    calculatePipe();
+}
+
+function syncPipeInput() {
+    let val = parseFloat(document.getElementById('pipeAngleSlider').value);
+    document.getElementById('pipeAngleInput').value = val.toFixed(1);
+    document.getElementById('pipeSliderVal').innerText = val.toFixed(1) + "°";
+    calculatePipe();
+}
+
+function syncPipeSlider() {
+    let val = parseFloat(document.getElementById('pipeAngleInput').value) || 42;
+    if(val < 10) val = 10; if(val > 60) val = 60;
+    document.getElementById('pipeAngleSlider').value = val;
+    document.getElementById('pipeSliderVal').innerText = val.toFixed(1) + "°";
+    calculatePipe();
+}
+
+function calculatePipe() {
+    let H = parseFloat(document.getElementById('pipeH').value) || 0;
+    let sideAngle = parseFloat(document.getElementById('pipeAngleInput').value) || 0;
+
+    if(H <= 0 || sideAngle <= 0) { clearPipeResults(); return; }
+
+    let rad = sideAngle * (Math.PI / 180);
+    let L = H / Math.sin(rad);
+    // ระยะหดสำหรับคอม้าดัดขาเดียว = L - ระยะราบแนวเดิม (H / tan(องศา))
+    let shrink = L - (H / Math.tan(rad));
+
+    document.getElementById('pipeCenterAngle').innerText = sideAngle.toFixed(1) + "°";
+    document.getElementById('pipeValL').innerText = L.toFixed(1) + " mm";
+    document.getElementById('pipeValShrink').innerText = shrink.toFixed(1) + " mm";
+
+    // อัปเดตรูป SVG สไตล์คอม้าขาเดียว (หลบขึ้น / หลบลง)
+    if (currentPipeDirection === 'down') {
+        document.getElementById('pipe_path').setAttribute('d', 'M 15,50 L 90,50 L 160,130 L 235,130');
+        updateEl('pipe_line_H', {x1: 85, y1: 50, x2: 85, y2: 130}); 
+        updateEl('pipe_img_H', {x: 60, y: 95});
+        updateEl('pipe_img_L1', {x: 135, y: 105});
+        updateEl('pipe_img_angCenter', {x: 90, y: 35});
+        updateEl('pipe_img_angSide', {x: 160, y: 150});
+    } else {
+        document.getElementById('pipe_path').setAttribute('d', 'M 15,130 L 90,130 L 160,50 L 235,50');
+        updateEl('pipe_line_H', {x1: 85, y1: 130, x2: 85, y2: 50}); 
+        updateEl('pipe_img_H', {x: 60, y: 95});
+        updateEl('pipe_img_L1', {x: 135, y: 80});
+        updateEl('pipe_img_angCenter', {x: 90, y: 150});
+        updateEl('pipe_img_angSide', {x: 160, y: 35});
+    }
+    
+    document.getElementById('pipe_img_H').innerText = "H: " + H.toFixed(0) + "mm";
+    document.getElementById('pipe_img_L1').innerText = "L: " + L.toFixed(0) + "mm";
+    document.getElementById('pipe_img_angCenter').innerText = sideAngle.toFixed(0) + "°";
+    document.getElementById('pipe_img_angSide').innerText = sideAngle.toFixed(0) + "°";
+}
+
+function clearPipeResults() {
+    document.getElementById('pipeCenterAngle').innerText = "-"; document.getElementById('pipeValL').innerText = "-"; document.getElementById('pipeValShrink').innerText = "-";
+}
+
+function updateEl(id, attrs) {
+    const el = document.getElementById(id);
+    if(el) { for (let key in attrs) { el.setAttribute(key, attrs[key]); } }
+}
+
+// เริ่มต้นหน้าเว็บที่หน้าดัดท่อคอม้า
+window.onload = function() {
+    switchMainTab('pipe');
 };
 </script>
 
