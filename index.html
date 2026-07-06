@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เครื่องคำนวณพับรางคอม้าแบบละเอียด</title>
-    
     <style>
-        /* ใช้ฟอนต์มาตรฐานของระบบเครื่อง เพื่อให้แสดงผลได้โดยไม่ต้องโหลดเน็ต */
-        body { 
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; 
-            background-color: #f4f7f6; 
-            padding: 20px; 
-            text-align: center; 
-        }
+        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; padding: 20px; text-align: center; }
         .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; text-align: left; }
         h2 { text-align: center; color: #333; margin-top: 0; }
         label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
@@ -38,9 +31,11 @@
     <input type="number" id="angle" value="40" min="1" max="89" step="0.5" oninput="calculateFromAngle()">
     <div class="hint">* ปรับตัวเลขได้ละเอียดตามต้องการ (เช่น 35, 42.5)</div>
 
+    <!-- สลับช่องความสูงคอม้ามาเป็นข้อ 3 -->
     <label>3. ความสูงคอม้า (เซนติเมตร):</label>
     <input type="number" id="height" value="10" step="0.1" oninput="calculateFromAngle()">
 
+    <!-- สลับช่องกว้างปากตัว V มาเป็นข้อ 4 และคงสไตล์สีส้มไว้ -->
     <label style="color: #e67e22;">4. หรือระบุ กว้างปากตัว V (เซนติเมตร):</label>
     <input type="number" id="vWidth" class="v-input" value="7.28" step="0.01" oninput="calculateFromVWidth()">
     <div class="hint">* สามารถพิมพ์แก้ไขตรงนี้เพื่อหาองศาแทนได้</div>
@@ -52,22 +47,7 @@
 </div>
 
 <script>
-// ฟังก์ชันบันทึกค่าลงในเครื่องอัตโนมัติ (แม้เปิดจากไฟล์ดิบ ๆ ก็ยังจำค่าเดิมได้)
-function saveData() {
-    localStorage.setItem('depth', document.getElementById('depth').value);
-    localStorage.setItem('angle', document.getElementById('angle').value);
-    localStorage.setItem('height', document.getElementById('height').value);
-    localStorage.setItem('vWidth', document.getElementById('vWidth').value);
-}
-
-function loadData() {
-    if(localStorage.getItem('depth')) document.getElementById('depth').value = localStorage.getItem('depth');
-    if(localStorage.getItem('angle')) document.getElementById('angle').value = localStorage.getItem('angle');
-    if(localStorage.getItem('height')) document.getElementById('height').value = localStorage.getItem('height');
-    if(localStorage.getItem('vWidth')) document.getElementById('vWidth').value = localStorage.getItem('vWidth');
-}
-
-// ฟังก์ชัน 1: คำนวณเมื่อกรอก "องศา"
+// ฟังก์ชัน 1: คำนวณเมื่อกรอก "องศา" (หาค่าปากตัว V, L, และระยะหาย)
 function calculateFromAngle() {
     let depth = parseFloat(document.getElementById('depth').value) || 0;
     let angle = parseFloat(document.getElementById('angle').value) || 0;
@@ -80,18 +60,18 @@ function calculateFromAngle() {
 
     let rad = (angle * Math.PI) / 180;
 
+    // สูตรคำนวณ
     let vWidth = 2 * depth * Math.tan(rad / 2);
     let distanceL = height / Math.sin(rad);
     let shrinkage = height * Math.tan(rad / 2);
 
+    // แสดงผล (อัปเดตช่องกว้างปากตัว V ด้วย)
     document.getElementById('vWidth').value = vWidth.toFixed(2);
     document.getElementById('distanceL').innerText = distanceL.toFixed(2);
     document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
-    
-    saveData();
 }
 
-// ฟังก์ชัน 2: คำนวณย้อนกลับจาก "กว้างปากตัว V"
+// ฟังก์ชัน 2: คำนวณย้อนกลับเมื่อแก้ไข "กว้างปากตัว V" (หาค่าองศา, L, และระยะหาย)
 function calculateFromVWidth() {
     let depth = parseFloat(document.getElementById('depth').value) || 0;
     let vWidth = parseFloat(document.getElementById('vWidth').value) || 0;
@@ -102,9 +82,12 @@ function calculateFromVWidth() {
         return;
     }
 
+    // คำนวณหามุม (องศา) จากความกว้างปากตัว V ย้อนกลับไป
+    // สูตร: angle = 2 * atan(vWidth / (2 * depth))
     let rad = 2 * Math.atan(vWidth / (2 * depth));
     let angle = (rad * 180) / Math.PI;
 
+    // ตรวจสอบความถูกต้องของมุมที่ได้
     if (angle <= 0 || angle >= 90) {
         clearResults();
         return;
@@ -113,11 +96,10 @@ function calculateFromVWidth() {
     let distanceL = height / Math.sin(rad);
     let shrinkage = height * Math.tan(rad / 2);
 
+    // แสดงผล (อัปเดตช่ององศาด้วย)
     document.getElementById('angle').value = angle.toFixed(1);
     document.getElementById('distanceL').innerText = distanceL.toFixed(2);
     document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
-    
-    saveData();
 }
 
 function clearResults() {
@@ -125,11 +107,14 @@ function clearResults() {
     document.getElementById('shrinkage').innerText = "-";
 }
 
-// โหลดค่าล่าสุดและคำนวณทันทีเมื่อเปิดไฟล์
-loadData();
+// เรียกคำนวณครั้งแรกตอนโหลดหน้าเว็บ
 calculateFromAngle();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGU9PmUucmVzcG9uZFdpdGgoZmV0Y2goZS5yZXF1ZXN0KSkpOw==');
+  }
 </script>
 
 </body>
 </html>
-
