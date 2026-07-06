@@ -1,115 +1,65 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เครื่องคำนวณพับรางคอม้าแบบละเอียด</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; padding: 20px; text-align: center; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; text-align: left; }
-        h2 { text-align: center; color: #333; margin-top: 0; }
-        label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: #2ecc71; outline: none; }
-        .result-box { background: #eef9f5; border-left: 5px solid #2ecc71; padding: 15px; margin-top: 20px; border-radius: 8px; }
-        .result-item { margin: 10px 0; font-size: 16px; }
-        .highlight { font-weight: bold; color: #27ae60; font-size: 18px; }
-        .hint { font-size: 12px; color: #888; margin-top: 2px; }
-        .v-input { background-color: #fffbf0; border: 1px solid #f39c12; }
-        .v-input:focus { border-color: #e67e22; }
-    </style>
-</head>
-<body>
+# 📐 เครื่องคำนวณพับรางคอม้าแบบละเอียด (BYSSR)
 
-<div class="card">
-    <h2>📐 คำนวณคอม้าตัว V (ปรับองศาBYssr)</h2>
-    
-    <label>1. ความลึกขนาดราง (เซนติเมตร):</label>
-    <input type="number" id="depth" value="10" step="0.1" oninput="calculateFromAngle()">
+เครื่องมือคำนวณออนไลน์สำหรับการคำนวณการพับรางคอม้าตัว V อย่างละเอียด ใช้สำหรับงานเดินสายและงานช่างโลหะ
 
-    <label>2. มุมหัก (องศา):</label>
-    <input type="number" id="angle" value="40" min="1" max="89" step="0.5" oninput="calculateFromAngle()">
-    <div class="hint">* ปรับตัวเลขได้ละเอียดตามต้องการ (เช่น 35, 42.5)</div>
+## ✨ ฟีเจอร์หลัก
 
-    <!-- สลับช่องความสูงคอม้ามาเป็นข้อ 3 -->
-    <label>3. ความสูงคอม้า (เซนติเมตร):</label>
-    <input type="number" id="height" value="10" step="0.1" oninput="calculateFromAngle()">
+- **คำนวณแบบ 2 ทิศทาง**: 
+  - คำนวณจากมุมหัก → หาค่าความกว้างปากตัว V
+  - คำนวณจากความกว้างปากตัว V → หาค่ามุมหัก
 
-    <!-- สลับช่องกว้างปากตัว V มาเป็นข้อ 4 และคงสไตล์สีส้มไว้ -->
-    <label style="color: #e67e22;">4. หรือระบุ กว้างปากตัว V (เซนติเมตร):</label>
-    <input type="number" id="vWidth" class="v-input" value="7.28" step="0.01" oninput="calculateFromVWidth()">
-    <div class="hint">* สามารถพิมพ์แก้ไขตรงนี้เพื่อหาองศาแทนได้</div>
+- **ข้อมูลที่คำนวณได้**:
+  - 📏 ระยะห่างจุดมาร์ก (Distance marking)
+  - ⚠️ ระยะรางที่หาย (Rail shrinkage)
+  - 🔲 ความกว้างปากตัว V (V-opening width)
 
-    <div class="result-box">
-        <div class="result-item">📏 ระยะห่างจุดมาร์ก (-): <span id="distanceL" class="highlight">15.56</span> ซม.</div>
-        <div class="result-item">⚠️ ระยะรางที่หาย: <span id="shrinkage" class="highlight">3.64</span> ซม.</div>
-    </div>
-</div>
+- **ปรับแต่งละเอียด**: รองรับทศนิยมสำหรับความแม่นยำสูง
 
-<script>
-// ฟังก์ชัน 1: คำนวณเมื่อกรอก "องศา" (หาค่าปากตัว V, L, และระยะหาย)
-function calculateFromAngle() {
-    let depth = parseFloat(document.getElementById('depth').value) || 0;
-    let angle = parseFloat(document.getElementById('angle').value) || 0;
-    let height = parseFloat(document.getElementById('height').value) || 0;
+## 📊 อินพุท
 
-    if (angle <= 0 || angle >= 90 || depth <= 0) {
-        clearResults();
-        return;
-    }
+1. **ความลึกขนาดราง** (ซม.) - ความหนาของวัสดุที่จะพับ
+2. **มุมหัก** (องศา) - มุมการพับ (1-89°)
+3. **ความสูงคอม้า** (ซม.) - ความสูงของจุดพับ
+4. **กว้างปากตัว V** (ซม.) - สามารถแก้ไขเพื่อหามุมย้อนกลับ
 
-    let rad = (angle * Math.PI) / 180;
+## 🎯 กรณีใช้งาน
 
-    // สูตรคำนวณ
-    let vWidth = 2 * depth * Math.tan(rad / 2);
-    let distanceL = height / Math.sin(rad);
-    let shrinkage = height * Math.tan(rad / 2);
+- งานเดินสายไฟฟ้า
+- งานช่างโลหะและประกอบชิ้นส่วน
+- ออกแบบและคำนวณการพับเหล็ก
+- งานตรวจสอบมาตรฐานการพับรางสาย
 
-    // แสดงผล (อัปเดตช่องกว้างปากตัว V ด้วย)
-    document.getElementById('vWidth').value = vWidth.toFixed(2);
-    document.getElementById('distanceL').innerText = distanceL.toFixed(2);
-    document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
-}
+## 🚀 วิธีใช้
 
-// ฟังก์ชัน 2: คำนวณย้อนกลับเมื่อแก้ไข "กว้างปากตัว V" (หาค่าองศา, L, และระยะหาย)
-function calculateFromVWidth() {
-    let depth = parseFloat(document.getElementById('depth').value) || 0;
-    let vWidth = parseFloat(document.getElementById('vWidth').value) || 0;
-    let height = parseFloat(document.getElementById('height').value) || 0;
+1. เปิดไฟล์ `index.html` ในเบราว์เซอร์
+2. กรอกค่าความลึกขนาดราง มุมหัก และความสูงคอม้า
+3. ระบบจะคำนวณผลลัพธ์โดยอัตโนมัติ
+4. สามารถแก้ไขค่ากว้างปากตัว V เพื่อหามุมย้อนกลับได้
 
-    if (vWidth <= 0 || depth <= 0) {
-        clearResults();
-        return;
-    }
+## 📐 สูตรคำนวณ
 
-    // คำนวณหามุม (องศา) จากความกว้างปากตัว V ย้อนกลับไป
-    // สูตร: angle = 2 * atan(vWidth / (2 * depth))
-    let rad = 2 * Math.atan(vWidth / (2 * depth));
-    let angle = (rad * 180) / Math.PI;
+```
+V-opening width = 2 × depth × tan(angle/2)
+Distance marking = height / sin(angle)
+Rail shrinkage = height × tan(angle/2)
+```
 
-    // ตรวจสอบความถูกต้องของมุมที่ได้
-    if (angle <= 0 || angle >= 90) {
-        clearResults();
-        return;
-    }
+## 🛠️ เทคโนโลยี
 
-    let distanceL = height / Math.sin(rad);
-    let shrinkage = height * Math.tan(rad / 2);
+- HTML5
+- CSS3
+- JavaScript (Vanilla)
 
-    // แสดงผล (อัปเดตช่ององศาด้วย)
-    document.getElementById('angle').value = angle.toFixed(1);
-    document.getElementById('distanceL').innerText = distanceL.toFixed(2);
-    document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
-}
+## 📝 หมายเหตุ
 
-function clearResults() {
-    document.getElementById('distanceL').innerText = "-";
-    document.getElementById('shrinkage').innerText = "-";
-}
+- รองรับมุมระหว่าง 1-89 องศา
+- ปรับความลึกและความสูงได้ตามต้องการ
+- คำนวณขณะพิมพ์แบบ real-time
 
-// เรียกคำนวณครั้งแรกตอนโหลดหน้าเว็บ
-calculateFromAngle();
-</script>
+## 👨‍💻 ผู้พัฒนา
 
-</body>
-</html>
+BYSSR - เครื่องมือช่างมืออาชีพ
+
+---
+
+**คำนวณพับรางคอม้าได้อย่างแม่นยำและรวดเร็ว!** ⚡
