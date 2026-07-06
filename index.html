@@ -42,6 +42,22 @@
     <label style="color: #e67e22;">4. หรือระบุ กว้างปากตัว V (เซนติเมตร):</label>
     <input type="number" id="vWidth" class="v-input" value="7.28" step="0.01" oninput="calculateFromVWidth()">
     <div class="hint">* สามารถพิมพ์แก้ไขตรงนี้เพื่อหาองศาแทนได้</div>
+<!-- รูปภาพประกอบบอกจุดคอม้าตัว V -->
+<div style="text-align: center; margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+  <svg viewBox="0 0 200 120" width="100%" style="max-width: 280px;">
+    <path d="M 10,20 L 70,20 L 100,90 L 130,20 L 190,20" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 70,20 L 70,90 L 100,90" fill="none" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="4"/>
+    <text x="45" y="60" fill="#ff9800" font-size="10" font-weight="bold">1. ความลึก</text>
+    <path d="M 65,13 L 95,83" fill="none" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="3"/>
+    <text x="105" y="55" fill="#2e7d32" font-size="10" font-weight="bold">🔑 ระยะมาร์ก (-)</text>
+    <circle cx="70" cy="20" r="4" fill="#d32f2f"/>
+    <circle cx="100" cy="90" r="4" fill="#d32f2f"/>
+    <text x="75" y="18" fill="#d32f2f" font-size="9">จุดมาร์กบน</text>
+    <text x="108" y="95" fill="#d32f2f" font-size="9">จุดมาร์กล่าง</text>
+    <path d="M 70,35 A 15,15 0 0,0 76,34" fill="none" stroke="#1976d2" stroke-width="2"/>
+    <text x="75" y="45" fill="#1976d2" font-size="10" font-weight="bold">2. มุมหัก</text>
+  </svg>
+</div>
 
     <div class="result-box">
         <div class="result-item">📏 ระยะห่างจุดมาร์ก (-): <span id="distanceL" class="highlight">15.56</span> ซม.</div>
