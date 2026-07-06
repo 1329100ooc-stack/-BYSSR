@@ -113,10 +113,13 @@ calculateFromAngle();
 </script>
 
 <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGU9PmUucmVzcG9uZFdpdGgoZmV0Y2goZS5yZXF1ZXN0KSkpOw==');
-}
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('ระบบออฟไลน์พร้อมใช้งาน!'))
+      .catch((err) => console.log('เกิดข้อผิดพลาด:', err));
+  }
 </script>
+
 
 </body>
 </html>
