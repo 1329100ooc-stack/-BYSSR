@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เครื่องคำนวณพับรางคอม้าแบบละเอียด</title>
-    <!-- เพิ่ม Meta สำหรับรองรับการแสดงผลแบบ App บนมือถือ -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#2ecc71">
     
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; padding: 20px; text-align: center; }
+        /* ใช้ฟอนต์มาตรฐานของระบบเครื่อง เพื่อให้แสดงผลได้โดยไม่ต้องโหลดเน็ต */
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; 
+            background-color: #f4f7f6; 
+            padding: 20px; 
+            text-align: center; 
+        }
         .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; text-align: left; }
         h2 { text-align: center; color: #333; margin-top: 0; }
         label { font-weight: bold; display: block; margin-top: 15px; color: #555; }
@@ -22,20 +24,11 @@
         .hint { font-size: 12px; color: #888; margin-top: 2px; }
         .v-input { background-color: #fffbf0; border: 1px solid #f39c12; }
         .v-input:focus { border-color: #e67e22; }
-        /* สไตล์ปุ่มติดตั้งแอป */
-        .install-btn { display: none; width: 100%; background: #2ecc71; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 8px; margin-bottom: 15px; cursor: pointer; transition: background 0.2s; }
-        .install-btn:hover { background: #27ae60; }
     </style>
-
-    <!-- สร้าง Web App Manifest แบบ Inline เพื่อให้ออฟไลน์สมบูรณ์แบบในไฟล์เดียว -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIsC6cs黎b25nIArguITguKPguguYfguInguITguYfguKfguJnguKPguLLguIfguKPguLLguIfguYHguJrguIsCiAgInNob3J0X25hbWUiIjogIs somebmFtZSIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZjRmN2Y2IiwKICAidGhlbWVfY29sb3IiOiAiIzJlY2M3MSIKfQ==">
 </head>
 <body>
 
 <div class="card">
-    <!-- ปุ่มสำหรับกดติดตั้งลงบนจอมือถือ/คอมพิวเตอร์ -->
-    <button id="installBtn" class="install-btn">📲 ติดตั้งแอปไว้บนมือถือ (ใช้งานออฟไลน์)</button>
-
     <h2>📐 คำนวณคอม้าตัว V (ปรับองศาBYssr)</h2>
     
     <label>1. ความลึกขนาดราง (เซนติเมตร):</label>
@@ -59,28 +52,7 @@
 </div>
 
 <script>
-// --- ส่วนการคำนวณเดิมของคุณ ---
-function calculateFromAngle() {
-    let depth = parseFloat(document.getElementById('depth').value) || 0;
-    let angle = parseFloat(document.getElementById('angle').value) || 0;
-    let height = parseFloat(document.getElementById('height').value) || 0;
-
-    if (angle <= 0 || angle >= 90 || depth <= 0) {
-        clearResults();
-        return;
-    }
-
-    let rad = (angle * Math.PI) / 180;
-    let vWidth = 2 * depth * Math.tan(rad / 2);
-    let distanceL = height / Math.sin(rad);
-    let shrinkage = height * Math.tan(rad / 2);
-
-    document.getElementById('vWidth').value = vWidth.toFixed(2);
-    document.getElementById('distanceL').innerText = distanceL.toFixed(2);
-    document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
-}
-
-// ฟังก์ชันเซฟค่าล่าสุดเก็บไว้ในเครื่องอัตโนมัติ (ปิดแอปเปิดใหม่ค่าไม่หาย)
+// ฟังก์ชันบันทึกค่าลงในเครื่องอัตโนมัติ (แม้เปิดจากไฟล์ดิบ ๆ ก็ยังจำค่าเดิมได้)
 function saveData() {
     localStorage.setItem('depth', document.getElementById('depth').value);
     localStorage.setItem('angle', document.getElementById('angle').value);
@@ -95,6 +67,31 @@ function loadData() {
     if(localStorage.getItem('vWidth')) document.getElementById('vWidth').value = localStorage.getItem('vWidth');
 }
 
+// ฟังก์ชัน 1: คำนวณเมื่อกรอก "องศา"
+function calculateFromAngle() {
+    let depth = parseFloat(document.getElementById('depth').value) || 0;
+    let angle = parseFloat(document.getElementById('angle').value) || 0;
+    let height = parseFloat(document.getElementById('height').value) || 0;
+
+    if (angle <= 0 || angle >= 90 || depth <= 0) {
+        clearResults();
+        return;
+    }
+
+    let rad = (angle * Math.PI) / 180;
+
+    let vWidth = 2 * depth * Math.tan(rad / 2);
+    let distanceL = height / Math.sin(rad);
+    let shrinkage = height * Math.tan(rad / 2);
+
+    document.getElementById('vWidth').value = vWidth.toFixed(2);
+    document.getElementById('distanceL').innerText = distanceL.toFixed(2);
+    document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
+    
+    saveData();
+}
+
+// ฟังก์ชัน 2: คำนวณย้อนกลับจาก "กว้างปากตัว V"
 function calculateFromVWidth() {
     let depth = parseFloat(document.getElementById('depth').value) || 0;
     let vWidth = parseFloat(document.getElementById('vWidth').value) || 0;
@@ -119,6 +116,8 @@ function calculateFromVWidth() {
     document.getElementById('angle').value = angle.toFixed(1);
     document.getElementById('distanceL').innerText = distanceL.toFixed(2);
     document.getElementById('shrinkage').innerText = shrinkage.toFixed(2);
+    
+    saveData();
 }
 
 function clearResults() {
@@ -126,61 +125,11 @@ function clearResults() {
     document.getElementById('shrinkage').innerText = "-";
 }
 
-// เพิ่มการจำค่าเมื่อผู้ใช้พิมพ์
-document.querySelectorAll('input').forEach(input => {
-    input.addEventListener('input', saveData);
-});
-
-// โหลดค่าเดิมและคำนวณครั้งแรก
+// โหลดค่าล่าสุดและคำนวณทันทีเมื่อเปิดไฟล์
 loadData();
 calculateFromAngle();
-
-
-// --- ส่วนคำสั่งเปิดโหมดออฟไลน์ (Service Worker โหลดในตัวเอง) ---
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // สร้างสคริปต์ Service Worker แบบ inline เพื่อให้อยู่ในไฟล์เดียวได้
-        const swCode = `
-            const CACHE_NAME = 'bending-calc-v1';
-            const ASSETS = [window.location.href, window.location.pathname];
-            self.addEventListener('install', (e) => {
-                e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
-            });
-            self.addEventListener('fetch', (e) => {
-                e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
-            });
-        `;
-        
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        
-        navigator.serviceWorker.register(swUrl).then(() => {
-            console.log('ระบบออฟไลน์พร้อมใช้งาน!');
-        }).catch(err => console.log('SW error:', err));
-    });
-}
-
-// ระบบปุ่มกดติดตั้งแอป (Add to Home Screen)
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = 'block'; // แสดงปุ่มเมื่อเครื่องรองรับ
-});
-
-installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            installBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
-    }
-});
 </script>
 
 </body>
 </html>
+
