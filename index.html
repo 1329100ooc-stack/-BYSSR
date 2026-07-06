@@ -113,6 +113,11 @@ function clearResults() {
 // เรียกคำนวณครั้งแรกตอนโหลดหน้าเว็บ
 calculateFromAngle();
 </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGU9PmUucmVzcG9uZFdpdGgoZmV0Y2goZS5yZXF1ZXN0KSkpOw==');
+  }
+</script>
 
 </body>
 </html>
