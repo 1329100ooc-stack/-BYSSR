@@ -155,7 +155,7 @@
 
     <!-- ================= PANEL 2: ดัดท่อคอม้า (ตัดฝั่งขวาออกแล้ว) ================= -->
     <div id="panelPipe" class="pipe-panel">
-        <h2 style="color: #d32f2f;">ดัดท่อคอม้า (ขาเดียว)</h2>
+        <h2 style="color: #d32f2f;">ดัดท่อคอม้า (-)</h2>
         <div class="dir-container">
             <button id="btnPipeDown" class="dir-btn pipe-theme" onclick="switchPipeDirection('down')">ดัดหลบลงด้านล่าง 👇</button>
             <button id="btnPipeUp" class="dir-btn active pipe-theme" onclick="switchPipeDirection('up')">ดัดหลบขึ้นด้านบน ☝️</button>
@@ -163,7 +163,7 @@
 
         <div class="diagram-container">
             <svg width="340" height="150" viewBox="0 0 240 180" style="overflow: visible; scale: 0.85;">
-                <!-- เส้นท่อวิ่งเฉียงขึ้นสไตล์คอม้าขาเดียว (ไม่มีหักลงฝั่งขวาแล้ว) -->
+                <!-- เส้นท่อวิ่งเฉียงขึ้นสไตล์คอม้า (ไม่มีหักลงฝั่งขวาแล้ว) -->
                 <path id="pipe_path" d="M 15,130 L 90,130 L 160,50 L 235,50" fill="none" stroke="#d32f2f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
                 
                 <!-- มิติระยะความสูง H -->
@@ -292,14 +292,14 @@ function clearTrayResults() {
 }
 
 
-// ================= SCRIPT 2: ดัดท่อคอม้า (ขาเดียว) =================
+// ================= SCRIPT 2: ดัดท่อคอม้า (-) =================
 function switchPipeDirection(dir) {
     currentPipeDirection = dir;
     document.getElementById('btnPipeDown').classList.toggle('pipe-theme', dir === 'down');
     document.getElementById('btnPipeDown').classList.toggle('active', dir === 'down');
     document.getElementById('btnPipeUp').classList.toggle('pipe-theme', dir === 'up');
     document.getElementById('btnPipeUp').classList.toggle('active', dir === 'up');
-    document.getElementById('lblPipeH').innerText = dir === 'down' ? "ระยะความลึกที่ต้องหลบ (H) - มิลลิเมตร:" : "ระยะความสูงที่ต้องหลบขึ้นบน (H) - มิลลิเมตร:";
+    document.getElementById('lblPipeH').innerText = dir === 'down' ? "ระยะความลึกที่ต้องหลบ (H) - มิลลิเมตร:" : "ระยะความสูงที่ต้องหลบขึ้นบน (H) - ซม.:";
     calculatePipe();
 }
 
@@ -326,14 +326,14 @@ function calculatePipe() {
 
     let rad = sideAngle * (Math.PI / 180);
     let L = H / Math.sin(rad);
-    // ระยะหดสำหรับคอม้าดัดขาเดียว = L - ระยะราบแนวเดิม (H / tan(องศา))
+    // ระยะหดสำหรับคอม้า = L - ระยะราบแนวเดิม (H / tan(องศา))
     let shrink = L - (H / Math.tan(rad));
 
     document.getElementById('pipeCenterAngle').innerText = sideAngle.toFixed(1) + "°";
-    document.getElementById('pipeValL').innerText = L.toFixed(1) + " mm";
-    document.getElementById('pipeValShrink').innerText = shrink.toFixed(1) + " mm";
+    document.getElementById('pipeValL').innerText = L.toFixed(1) + " ซม.";
+    document.getElementById('pipeValShrink').innerText = shrink.toFixed(1) + " ซม.";
 
-    // อัปเดตรูป SVG สไตล์คอม้าขาเดียว (หลบขึ้น / หลบลง)
+    // อัปเดตรูป SVG สไตล์คอม้า (หลบขึ้น / หลบลง)
     if (currentPipeDirection === 'down') {
         document.getElementById('pipe_path').setAttribute('d', 'M 15,50 L 90,50 L 160,130 L 235,130');
         updateEl('pipe_line_H', {x1: 85, y1: 50, x2: 85, y2: 130}); 
@@ -350,8 +350,8 @@ function calculatePipe() {
         updateEl('pipe_img_angSide', {x: 160, y: 35});
     }
     
-    document.getElementById('pipe_img_H').innerText = "H: " + H.toFixed(0) + "mm";
-    document.getElementById('pipe_img_L1').innerText = "L: " + L.toFixed(0) + "mm";
+    document.getElementById('pipe_img_H').innerText = "H: " + H.toFixed(0) + "ซม.";
+    document.getElementById('pipe_img_L1').innerText = "L: " + L.toFixed(0) + "ซม.";
     document.getElementById('pipe_img_angCenter').innerText = sideAngle.toFixed(0) + "°";
     document.getElementById('pipe_img_angSide').innerText = sideAngle.toFixed(0) + "°";
 }
